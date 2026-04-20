@@ -6,117 +6,177 @@
   <title>Z-CITY ROLEPLAY | Loading</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
   <style>
+    /* Reset & Basis */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Roboto Condensed', Arial, sans-serif; }
+    html, body { 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden; 
+        background: #000; 
+        font-family: 'Roboto Condensed', Arial, sans-serif; 
+    }
 
-    /* ── Slideshow (Original) ────────────────────────── */
-    #slideshow { position: fixed; inset: 0; z-index: 0; }
+    /* ── Slideshow ────────────────────────── */
+    #slideshow { 
+        position: absolute; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 1; 
+    }
     .slide {
-      position: absolute; inset: 0;
-      background-size: cover; background-position: center;
-      opacity: 0; transition: opacity 1.4s ease-in-out;
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-size: cover; 
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0; 
+      transition: opacity 1.5s ease-in-out;
     }
     .slide.active { opacity: 1; }
+    
+    /* Pfade zu deinen Bildern */
     #slide1 { background-image: url('assets/bg3.jpg'); }
     #slide2 { background-image: url('assets/bg1.jpg'); }
     #slide3 { background-image: url('assets/bg2.jpg'); }
 
-    #overlay { position: fixed; inset: 0; z-index: 1; background: rgba(0,0,0,0.55); }
-
-    /* ── Info Panel (Original Design) ───────────────── */
-    #main-screen {
-      position: fixed; inset: 0; z-index: 10;
-      display: flex; align-items: center; justify-content: flex-end;
-      padding-right: 6vw;
+    /* Dunkles Overlay über den Bildern */
+    #overlay { 
+        position: absolute; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        z-index: 2;
     }
+
+    /* ── Info Panel (Oben Links) ────────────────── */
     #info-panel {
-      width: 390px; max-width: 44vw;
-      opacity: 0; transform: translateY(18px);
-      transition: opacity 1s ease 0.2s, transform 1s ease 0.2s;
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      z-index: 10;
+      color: #fff;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: all 1s ease-out;
     }
-    #info-panel.visible { opacity: 1; transform: translateY(0); }
+    #info-panel.visible { opacity: 1; transform: translateX(0); }
 
-    .panel-accent { width: 55px; height: 3px; background: #b01010; margin-bottom: 14px; }
-    .panel-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 4px; color: #b01010; text-transform: uppercase; margin-bottom: 8px; }
-    .panel-title { font-size: clamp(32px, 3.8vw, 48px); font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; line-height: 1.05; margin-bottom: 4px; }
-    .panel-title span { color: #cc1a1a; }
-    .panel-subtitle { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 22px; }
-    .panel-divider { width: 100%; height: 1px; background: rgba(180,20,20,0.3); margin-bottom: 20px; }
-    .panel-body { font-family: 'Roboto', Arial, sans-serif; font-size: 13.5px; font-weight: 300; color: rgba(255,255,255,0.72); line-height: 1.75; }
-    .panel-body strong { color: #fff; font-weight: 400; }
+    #info-panel h1 { font-size: 64px; font-weight: 700; line-height: 0.9; letter-spacing: -2px; }
+    #info-panel h1 span { color: #ffcc00; } /* Akzentfarbe */
+    #info-panel p { font-size: 18px; font-weight: 300; margin-top: 10px; color: #ddd; }
 
-    /* ── Ladebalken Strip ───────────────────────────── */
+    /* ── Untere Leiste & Ladebalken ──────────────── */
+    #loading-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 20;
+    }
+
     #loading-strip {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
-      padding: 0 0 18px 0;
-      opacity: 0; transition: opacity 0.6s ease 0.5s;
+      background: rgba(0, 0, 0, 0.85);
+      border-top: 2px solid #ffcc00;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      transform: translateY(100%);
+      transition: transform 0.8s ease-out;
     }
-    #loading-strip.visible { opacity: 1; }
-    #progress-track { width: 100%; height: 2px; background: rgba(255,255,255,0.07); margin-bottom: 10px; }
-    #progress-fill { height: 100%; width: 0%; background: #b01010; transition: width 0.25s ease; box-shadow: 0 0 12px rgba(180,20,20,0.8); }
-    #strip-inner { display: flex; justify-content: space-between; align-items: center; padding: 0 28px; }
-    .strip-left { font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.28); text-transform: uppercase; }
-    .strip-right { display: flex; align-items: center; gap: 8px; }
-    .strip-right span { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
-    #spinner { width: 14px; height: 14px; border: 1.5px solid rgba(255,255,255,0.12); border-top-color: #cc1a1a; border-radius: 50%; animation: spin 0.9s linear infinite; }
+    #loading-strip.visible { transform: translateY(0); }
+
+    .strip-left { font-size: 20px; font-weight: 400; letter-spacing: 1px; }
+    .strip-right { display: flex; align-items: center; gap: 20px; }
+
+    #pct-text { font-size: 24px; font-weight: 700; min-width: 60px; text-align: right; }
+
+    /* Progress Fill (Hintergrund-Balken) */
+    #progress-bar-bg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+    }
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #ffcc00;
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+      transition: width 0.3s ease-out;
+    }
+
+    /* Kleiner Spinner */
+    #spinner {
+      width: 25px;
+      height: 25px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: #ffcc00;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
+
   </style>
 </head>
-<body onmousemove="tryPlayMusic()" onclick="tryPlayMusic()">
+<body>
+
+  <audio id="bg-music" loop>
+    <source src="assets/theme.ogg" type="audio/ogg">
+  </audio>
 
   <div id="slideshow">
-    <div class="slide active" id="slide1"></div>
-    <div class="slide" id="slide2"></div>
-    <div class="slide" id="slide3"></div>
+    <div id="slide1" class="slide active"></div>
+    <div id="slide2" class="slide"></div>
+    <div id="slide3" class="slide"></div>
   </div>
+
   <div id="overlay"></div>
 
-  <audio id="bg-music" src="assets/theme.ogg" loop preload="auto"></audio>
-
-  <div id="main-screen">
-    <div id="info-panel">
-      <div class="panel-accent"></div>
-      <div class="panel-eyebrow">Garry's Mod Roleplay</div>
-      <div class="panel-title"><span>Z-CITY</span><br>ROLEPLAY</div>
-      <div class="panel-subtitle">Based on GTA V</div>
-      <div class="panel-divider"></div>
-      <div class="panel-body">
-        <strong>Based on GTA V</strong>, this Roleplay server is basically GTA V RP aka FiveM — in Garry's Mod.<br><br>
-        This is a <strong>Medium-Serious RP</strong> server based on Santos and CityRP.
-      </div>
-    </div>
+  <div id="info-panel">
+    <h1>Z-CITY<br><span>ROLEPLAY</span></h1>
+    <p>Willkommen in der Stadt der unbegrenzten Möglichkeiten.</p>
   </div>
 
-  <div id="loading-strip">
-    <div id="progress-track"><div id="progress-fill"></div></div>
-    <div id="strip-inner">
-      <div class="strip-left">Z-City Roleplay &nbsp;·&nbsp; Connecting to server</div>
+  <div id="loading-container">
+    <div id="loading-strip">
+      <div class="strip-left">Verbindung zum Server wird hergestellt...</div>
       <div class="strip-right">
         <span id="pct-text">0%</span>
         <div id="spinner"></div>
       </div>
     </div>
+    <div id="progress-bar-bg">
+      <div id="progress-fill"></div>
+    </div>
   </div>
 
   <script>
-    var musicPlaying = false;
+    // Musik Logik
+    var audio = document.getElementById('bg-music');
+    audio.volume = 0.3;
+
     function tryPlayMusic() {
-      if (musicPlaying) return;
-      var audio = document.getElementById('bg-music');
-      audio.volume = 0.5;
-      audio.play().then(function() {
-        musicPlaying = true;
-      }).catch(function(e) {});
+      audio.play().catch(function(e) {
+        // Falls Browser Autoplay blockiert
+        console.log("Musik-Autoplay blockiert, warte auf Interaktion");
+      });
     }
 
     window.onload = function() {
-      // Panel und Ladebalken sofort anzeigen
-      document.getElementById('info-panel').classList.add('visible');
-      document.getElementById('loading-strip').classList.add('visible');
+      // Panel Animationen starten
+      setTimeout(function(){
+        document.getElementById('info-panel').classList.add('visible');
+        document.getElementById('loading-strip').classList.add('visible');
+        tryPlayMusic();
+      }, 500);
+
       startLoader();
     };
 
-    // Slideshow Automatik
+    // Slideshow Automatik (alle 6 Sekunden)
     var slides = document.querySelectorAll('.slide');
     var cur = 0;
     setInterval(function(){
@@ -125,19 +185,37 @@
       slides[cur].classList.add('active');
     }, 6000);
 
-    // Ladebalken Simulation
+    // Ladebalken Simulation (für Gmod sv_loadingurl)
     function startLoader() {
       var fill = document.getElementById('progress-fill');
       var pctTxt = document.getElementById('pct-text');
       var pct = 0;
-      function step() {
-        if (pct >= 100) return;
-        pct = Math.min(100, pct + Math.random()*2+0.2);
-        fill.style.width = pct+'%';
-        pctTxt.textContent = Math.floor(pct)+'%';
-        setTimeout(step, pct<80 ? 150 : 400);
-      }
-      step();
+
+      // In Gmod gibt es Funktionen wie DownloadingFile( fileName )
+      // Diese Simulation dient zur Vorschau im Browser
+      var interval = setInterval(function() {
+        if (pct >= 100) {
+           clearInterval(interval);
+        } else {
+          pct += Math.random() * 1.5;
+          if(pct > 100) pct = 100;
+          fill.style.width = pct + "%";
+          pctTxt.innerText = Math.floor(pct) + "%";
+        }
+      }, 150);
+    }
+
+    // Gmod Integration (Optional: falls du echte Dateinamen anzeigen willst)
+    function SetFilesTotal( total ) {}
+    function SetFilesNeeded( needed ) {}
+    function DownloadingFile( fileName ) {
+        // Hier könnte man den Text "Verbindung..." durch den Dateinamen ersetzen
+    }
+    function SetStatusChanged( status ) {
+        if(status.indexOf("Getting host info") !== -1) {
+            // Musik spätestens hier starten falls möglich
+            tryPlayMusic();
+        }
     }
   </script>
 </body>
