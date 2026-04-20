@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,7 @@
         font-family: 'Roboto Condensed', Arial, sans-serif; 
     }
 
-    /* ── Slideshow (Fix für Gmod: kein 'inset') ────────────────── */
+    /* ── Slideshow ────────────────── */
     #slideshow { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
@@ -33,23 +33,23 @@
     }
     .slide.active { opacity: 1; }
     
-    /* Pfade zu deinen Bildern */
+    /* Bilder-Pfade */
     #slide1 { background-image: url('assets/bg3.jpg'); }
     #slide2 { background-image: url('assets/bg1.jpg'); }
     #slide3 { background-image: url('assets/bg2.jpg'); }
 
-    /* Dunkles Overlay über den Bildern */
+    /* Dunkles Overlay */
     #overlay { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
         z-index: 2;
     }
 
-    /* ── Info Panel (Oben Links) ────────────────── */
+    /* ── Info Panel (Optimiert für langen Text) ────────────────── */
     #info-panel {
       position: absolute;
-      top: 60px;
+      top: 10%;
       left: 60px;
       z-index: 10;
       color: #fff;
@@ -57,25 +57,32 @@
       opacity: 0;
       transform: translateX(-30px);
       transition: all 1.2s ease-out;
+      /* Verhindert, dass das Panel zu breit wird */
+      max-width: 600px; 
     }
     #info-panel.visible { opacity: 1; transform: translateX(0); }
 
     #info-panel h1 { 
         font-size: 72px; 
         font-weight: 700; 
-        line-height: 0.85; 
+        line-height: 0.9; 
         letter-spacing: -2px; 
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        text-shadow: 2px 2px 15px rgba(0,0,0,0.7);
+        margin-bottom: 20px;
     }
-    #info-panel h1 span { color: #ff0000; } /* Rote Akzentfarbe */
+    #info-panel h1 span { color: #ff0000; } 
     
     #info-panel p { 
-        font-size: 20px; 
+        font-size: 18px; 
         font-weight: 300; 
-        margin-top: 15px; 
-        color: #eee; 
+        color: #ddd; 
         letter-spacing: 1px;
-        text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.8);
+        text-transform: none; /* Bessere Lesbarkeit bei langen Texten */
+        line-height: 1.6;     /* Mehr Zeilenabstand für den Textfluss nach unten */
+        background: rgba(0, 0, 0, 0.4); /* Leichter Hintergrund für bessere Lesbarkeit */
+        padding: 15px;
+        border-left: 4px solid #ff0000; /* Roter Akzentstreifen links */
     }
 
   </style>
@@ -96,29 +103,28 @@
 
   <div id="info-panel">
     <h1>Z-CITY<br><span>ROLEPLAY</span></h1>
-    <p>Based on GTA V, this roleplay server is essentially GTA V RP (FiveM) brought to GMod. It is a Medium-to-Serious RP server based on Los Santos and CityRP.</p>
+    <p>
+      Based on GTA V, this roleplay server is essentially GTA V RP (FiveM) brought to GMod. 
+      It is a Medium-to-Serious RP server based on Los Santos and CityRP. 
+      Experience a detailed world with unique jobs, a stable economy, and endless possibilities.
+    </p>
   </div>
 
   <script>
-    // Musik Logik
     var audio = document.getElementById('bg-music');
     audio.volume = 0.3;
 
     function tryPlayMusic() {
-      audio.play().catch(function(e) {
-        console.log("Autoplay blocked");
-      });
+      audio.play().catch(function(e) { console.log("Autoplay blocked"); });
     }
 
     window.onload = function() {
-      // Panel Animation nach kurzem Delay
       setTimeout(function(){
         document.getElementById('info-panel').classList.add('visible');
         tryPlayMusic();
       }, 500);
     };
 
-    // Slideshow Automatik (alle 6 Sekunden)
     var slides = document.querySelectorAll('.slide');
     var cur = 0;
     setInterval(function(){
@@ -127,7 +133,6 @@
       slides[cur].classList.add('active');
     }, 6000);
 
-    // Gmod Status Funktionen (bleiben im Hintergrund aktiv)
     function SetStatusChanged( status ) {
         if(status.indexOf("Getting host info") !== -1) {
             tryPlayMusic();
