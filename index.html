@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,7 @@
         font-family: 'Roboto Condensed', Arial, sans-serif; 
     }
 
-    /* ── Slideshow ────────────────────────── */
+    /* ── Slideshow (Fix für Gmod: kein 'inset') ────────────────── */
     #slideshow { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
@@ -42,82 +42,41 @@
     #overlay { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
         z-index: 2;
     }
 
     /* ── Info Panel (Oben Links) ────────────────── */
     #info-panel {
       position: absolute;
-      top: 50px;
-      left: 50px;
+      top: 60px;
+      left: 60px;
       z-index: 10;
       color: #fff;
       text-transform: uppercase;
       opacity: 0;
-      transform: translateX(-20px);
-      transition: all 1s ease-out;
+      transform: translateX(-30px);
+      transition: all 1.2s ease-out;
     }
     #info-panel.visible { opacity: 1; transform: translateX(0); }
 
-    #info-panel h1 { font-size: 64px; font-weight: 700; line-height: 0.9; letter-spacing: -2px; }
-    #info-panel h1 span { color: #ffcc00; } /* Akzentfarbe */
-    #info-panel p { font-size: 18px; font-weight: 300; margin-top: 10px; color: #ddd; }
-
-    /* ── Untere Leiste & Ladebalken ──────────────── */
-    #loading-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: 20;
+    #info-panel h1 { 
+        font-size: 72px; 
+        font-weight: 700; 
+        line-height: 0.85; 
+        letter-spacing: -2px; 
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
     }
-
-    #loading-strip {
-      background: rgba(0, 0, 0, 0.85);
-      border-top: 2px solid #ffcc00;
-      padding: 15px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #fff;
-      transform: translateY(100%);
-      transition: transform 0.8s ease-out;
+    #info-panel h1 span { color: #ff0000; } /* Rote Akzentfarbe */
+    
+    #info-panel p { 
+        font-size: 20px; 
+        font-weight: 300; 
+        margin-top: 15px; 
+        color: #eee; 
+        letter-spacing: 1px;
+        text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
     }
-    #loading-strip.visible { transform: translateY(0); }
-
-    .strip-left { font-size: 20px; font-weight: 400; letter-spacing: 1px; }
-    .strip-right { display: flex; align-items: center; gap: 20px; }
-
-    #pct-text { font-size: 24px; font-weight: 700; min-width: 60px; text-align: right; }
-
-    /* Progress Fill (Hintergrund-Balken) */
-    #progress-bar-bg {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 4px;
-      width: 100%;
-      background: rgba(255,255,255,0.1);
-    }
-    #progress-fill {
-      height: 100%;
-      width: 0%;
-      background: #ffcc00;
-      box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
-      transition: width 0.3s ease-out;
-    }
-
-    /* Kleiner Spinner */
-    #spinner {
-      width: 25px;
-      height: 25px;
-      border: 3px solid rgba(255,255,255,0.2);
-      border-top-color: #ffcc00;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
   </style>
 </head>
@@ -137,20 +96,7 @@
 
   <div id="info-panel">
     <h1>Z-CITY<br><span>ROLEPLAY</span></h1>
-    <p>Willkommen in der Stadt der unbegrenzten Möglichkeiten.</p>
-  </div>
-
-  <div id="loading-container">
-    <div id="loading-strip">
-      <div class="strip-left">Verbindung zum Server wird hergestellt...</div>
-      <div class="strip-right">
-        <span id="pct-text">0%</span>
-        <div id="spinner"></div>
-      </div>
-    </div>
-    <div id="progress-bar-bg">
-      <div id="progress-fill"></div>
-    </div>
+    <p>Welcome to the city of endless possibilities.</p>
   </div>
 
   <script>
@@ -160,20 +106,16 @@
 
     function tryPlayMusic() {
       audio.play().catch(function(e) {
-        // Falls Browser Autoplay blockiert
-        console.log("Musik-Autoplay blockiert, warte auf Interaktion");
+        console.log("Autoplay blocked");
       });
     }
 
     window.onload = function() {
-      // Panel Animationen starten
+      // Panel Animation nach kurzem Delay
       setTimeout(function(){
         document.getElementById('info-panel').classList.add('visible');
-        document.getElementById('loading-strip').classList.add('visible');
         tryPlayMusic();
       }, 500);
-
-      startLoader();
     };
 
     // Slideshow Automatik (alle 6 Sekunden)
@@ -185,35 +127,9 @@
       slides[cur].classList.add('active');
     }, 6000);
 
-    // Ladebalken Simulation (für Gmod sv_loadingurl)
-    function startLoader() {
-      var fill = document.getElementById('progress-fill');
-      var pctTxt = document.getElementById('pct-text');
-      var pct = 0;
-
-      // In Gmod gibt es Funktionen wie DownloadingFile( fileName )
-      // Diese Simulation dient zur Vorschau im Browser
-      var interval = setInterval(function() {
-        if (pct >= 100) {
-           clearInterval(interval);
-        } else {
-          pct += Math.random() * 1.5;
-          if(pct > 100) pct = 100;
-          fill.style.width = pct + "%";
-          pctTxt.innerText = Math.floor(pct) + "%";
-        }
-      }, 150);
-    }
-
-    // Gmod Integration (Optional: falls du echte Dateinamen anzeigen willst)
-    function SetFilesTotal( total ) {}
-    function SetFilesNeeded( needed ) {}
-    function DownloadingFile( fileName ) {
-        // Hier könnte man den Text "Verbindung..." durch den Dateinamen ersetzen
-    }
+    // Gmod Status Funktionen (bleiben im Hintergrund aktiv)
     function SetStatusChanged( status ) {
         if(status.indexOf("Getting host info") !== -1) {
-            // Musik spätestens hier starten falls möglich
             tryPlayMusic();
         }
     }
